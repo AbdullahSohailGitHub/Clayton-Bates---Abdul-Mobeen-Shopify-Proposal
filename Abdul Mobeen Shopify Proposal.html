@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Abdul Mobeen — Senior Shopify Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sg:       #008060;
+  --sg-light: #00A67E;
+  --sg-pale:  rgba(0,128,96,0.18);
+  --sg-glow:  rgba(0,128,96,0.30);
+  --bg:       #0B0F0E;
+  --bg2:      #111918;
+  --bg3:      #0E1A17;
+  --card:     #141F1C;
+  --card2:    #1A2926;
+  --white:    #F0F6F4;
+  --muted:    rgba(240,246,244,0.52);
+  --border:   rgba(0,128,96,0.22);
+  --border2:  rgba(0,128,96,0.10);
+  --font-head:'Syne',sans-serif;
+  --font-body:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--white);font-family:var(--font-body);overflow-x:hidden;line-height:1.6}
+
+/* ══════════════════════════════════════
+   SHOPIFY-STYLE BACKGROUND CANVAS
+══════════════════════════════════════ */
+#bg-canvas{
+  position:fixed;inset:0;z-index:0;
+  pointer-events:none;
+}
+/* Deep mesh gradient base — feels like Shopify admin */
+.bg-mesh{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 55% at 15% 20%,  rgba(0,128,96,0.13) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 75%,  rgba(0,128,96,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 60% at 50% 50%,  rgba(0,60,45,0.20)  0%, transparent 70%),
+    linear-gradient(160deg, #0B1612 0%, #0B0F0E 45%, #0D1A15 100%);
+}
+/* Subtle noise texture overlay */
+.bg-noise{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+}
+/* Shopify-green subtle scanline glow at top */
+.bg-top-glow{
+  position:fixed;top:0;left:0;right:0;z-index:1;pointer-events:none;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--sg),transparent);
+  opacity:0.6;
+}
+
+/* ══════════════════════════════════════
+   NAV
+══════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 6%;
+  background:rgba(11,15,14,0.82);
+  backdrop-filter:blur(20px) saturate(160%);
+  border-bottom:1px solid var(--border);
+  animation:fadeDown .7s ease both;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-head);font-size:1.15rem;
+  color:var(--white);letter-spacing:-.01em;
+}
+.nav-logo-icon{
+  width:30px;height:30px;border-radius:7px;
+  background:var(--sg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;
+}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{
+  color:var(--muted);text-decoration:none;
+  font-size:.85rem;font-weight:500;letter-spacing:.03em;
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--sg-light)}
+.nav-cta{
+  background:var(--sg);color:#fff;
+  border:none;padding:9px 20px;border-radius:7px;
+  font-weight:700;font-size:.83rem;cursor:pointer;
+  letter-spacing:.02em;
+  transition:background .2s,transform .2s,box-shadow .2s;
+  text-decoration:none;
+}
+.nav-cta:hover{background:var(--sg-light);transform:translateY(-2px);box-shadow:0 8px 24px var(--sg-glow)}
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:130px 6% 90px;
+  position:relative;z-index:10;
+}
+/* Shopify-bag watermark behind hero text */
+.hero-watermark{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-size:32vw;opacity:.025;
+  pointer-events:none;user-select:none;
+  line-height:1;
+}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,128,96,0.10);
+  border:1px solid rgba(0,128,96,0.30);
+  border-radius:100px;padding:7px 18px;
+  font-size:.75rem;font-weight:700;letter-spacing:.09em;
+  color:var(--sg-light);text-transform:uppercase;
+  margin-bottom:28px;
+  animation:fadeUp .8s .2s both;
+}
+.pill-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--sg-light);
+  animation:pulse 2s ease infinite;
+}
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 0 var(--sg-glow)}
+  50%{box-shadow:0 0 0 7px transparent}
+}
+.hero h1{
+  font-family:var(--font-head);
+  font-size:clamp(2.8rem,6.5vw,5.2rem);
+  font-weight:800;line-height:1.05;
+  letter-spacing:-.03em;
+  margin-bottom:8px;
+  animation:fadeUp .8s .35s both;
+}
+.hero h1 .green{
+  color:var(--sg-light);
+  position:relative;display:inline-block;
+}
+/* underline accent */
+.hero h1 .green::after{
+  content:'';
+  position:absolute;bottom:-4px;left:0;right:0;
+  height:3px;border-radius:2px;
+  background:linear-gradient(90deg,var(--sg),transparent);
+}
+.hero-sub{
+  font-size:clamp(1rem,1.8vw,1.2rem);
+  color:var(--muted);font-weight:400;
+  max-width:540px;margin:20px auto 46px;
+  line-height:1.75;
+  animation:fadeUp .8s .5s both;
+}
+/* Shopify-style product card floating stats */
+.hero-stats{
+  display:flex;gap:0;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  margin-bottom:40px;
+  animation:fadeUp .8s .65s both;
+  box-shadow:0 4px 30px rgba(0,0,0,.4);
+}
+.stat{
+  padding:22px 36px;text-align:center;
+  position:relative;
+}
+.stat+.stat::before{
+  content:'';
+  position:absolute;left:0;top:20%;bottom:20%;
+  width:1px;background:var(--border);
+}
+.stat-num{
+  font-family:var(--font-head);
+  font-size:2.2rem;font-weight:800;
+  color:var(--sg-light);line-height:1;
+}
+.stat-label{
+  font-size:.72rem;color:var(--muted);
+  font-weight:500;margin-top:5px;
+  letter-spacing:.07em;text-transform:uppercase;
+}
+.hero-btns{
+  display:flex;gap:14px;flex-wrap:wrap;justify-content:center;
+  animation:fadeUp .8s .8s both;
+}
+.btn-primary{
+  background:var(--sg);color:#fff;
+  padding:14px 30px;border-radius:8px;
+  font-weight:700;font-size:.92rem;
+  text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:background .2s,transform .2s,box-shadow .2s;
+  letter-spacing:.01em;
+}
+.btn-primary:hover{background:var(--sg-light);transform:translateY(-3px);box-shadow:0 14px 36px var(--sg-glow)}
+.btn-outline{
+  background:transparent;color:var(--white);
+  padding:14px 30px;border-radius:8px;
+  font-weight:600;font-size:.92rem;
+  border:1px solid rgba(255,255,255,0.18);
+  text-decoration:none;
+  transition:border-color .2s,color .2s,background .2s;
+}
+.btn-outline:hover{border-color:var(--sg);color:var(--sg-light);background:rgba(0,128,96,.06)}
+
+/* ══════════════════════════════════════
+   FREE OFFER BANNER
+══════════════════════════════════════ */
+.offer-wrap{
+  position:relative;z-index:10;
+  padding:0 6%;
+  max-width:1060px;margin:0 auto 0;
+}
+.offer-banner{
+  background:linear-gradient(120deg, rgba(0,128,96,.16) 0%, rgba(0,128,96,.06) 100%);
+  border:1px solid rgba(0,128,96,.35);
+  border-radius:16px;
+  padding:30px 40px;
+  display:flex;align-items:center;gap:24px;
+  position:relative;overflow:hidden;
+  animation:fadeUp .8s .9s both;
+  box-shadow:0 0 60px rgba(0,128,96,.08);
+}
+.offer-banner::before{
+  content:'';position:absolute;
+  top:-60px;right:-60px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,128,96,.18),transparent 70%);
+}
+.offer-banner::after{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--sg),transparent);
+  opacity:.5;
+}
+.offer-tag{
+  flex-shrink:0;
+  background:var(--sg);color:#fff;
+  border-radius:10px;padding:12px 14px;
+  font-size:1.6rem;line-height:1;
+}
+.offer-text h3{
+  font-family:var(--font-head);
+  font-size:1.15rem;font-weight:800;
+  color:var(--sg-light);margin-bottom:5px;
+  letter-spacing:-.01em;
+}
+.offer-text p{color:var(--muted);font-size:.88rem;line-height:1.65}
+
+/* ══════════════════════════════════════
+   SECTIONS SHARED
+══════════════════════════════════════ */
+section{padding:90px 6%;position:relative;z-index:10}
+.inner{max-width:1100px;margin:0 auto}
+.eyebrow{
+  font-size:.72rem;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--sg-light);
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.eyebrow::before{content:'';width:20px;height:1px;background:var(--sg)}
+.sec-title{
+  font-family:var(--font-head);
+  font-size:clamp(1.9rem,4vw,2.9rem);
+  font-weight:800;line-height:1.15;
+  letter-spacing:-.02em;
+  margin-bottom:14px;
+}
+.sec-desc{color:var(--muted);font-size:.98rem;line-height:1.75;max-width:520px}
+
+/* ══════════════════════════════════════
+   WHY ME — SHOPIFY ADMIN CARD STYLE
+══════════════════════════════════════ */
+.why-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  gap:16px;margin-top:50px;
+}
+.why-card{
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:12px;padding:26px;
+  transition:transform .3s,border-color .3s,box-shadow .3s;
+  opacity:0;transform:translateY(24px);
+}
+.why-card.vis{animation:cardIn .55s ease forwards}
+.why-card:hover{
+  transform:translateY(-5px);
+  border-color:var(--border);
+  box-shadow:0 12px 40px rgba(0,0,0,.35),0 0 0 1px rgba(0,128,96,.12);
+}
+.wc-icon{
+  width:42px;height:42px;border-radius:9px;
+  background:rgba(0,128,96,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:14px;
+  border:1px solid var(--border2);
+}
+.why-card h4{font-size:.98rem;font-weight:700;margin-bottom:7px}
+.why-card p{font-size:.84rem;color:var(--muted);line-height:1.65}
+
+/* ══════════════════════════════════════
+   PORTFOLIO — SHOPIFY STORE LISTING STYLE
+══════════════════════════════════════ */
+.portfolio-sec{background:var(--bg2)}
+.portfolio-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(290px,1fr));
+  gap:16px;margin-top:50px;
+}
+.p-card{
+  border-radius:12px;overflow:hidden;
+  border:1px solid var(--border2);
+  background:var(--card);
+  transition:transform .3s,box-shadow .3s,border-color .3s;
+  opacity:0;transform:translateY(24px);
+  text-decoration:none;color:inherit;display:block;
+}
+.p-card.vis{animation:cardIn .55s ease forwards}
+.p-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 20px 50px rgba(0,0,0,.45);
+  border-color:var(--border);
+}
+.p-thumb{
+  height:150px;display:flex;align-items:center;justify-content:center;
+  font-size:2.4rem;position:relative;overflow:hidden;
+}
+/* Shopify-ish store screenshots mimicked with gradient brand colors */
+.p-thumb::before{
+  content:'';position:absolute;inset:0;
+  background:inherit;opacity:.9;
+}
+.pt-1{background:linear-gradient(135deg,#1C1028,#2D1B3D)}
+.pt-2{background:linear-gradient(135deg,#0A2318,#143D2A)}
+.pt-3{background:linear-gradient(135deg,#2A1608,#3D2B1A)}
+.pt-4{background:linear-gradient(135deg,#180D2E,#2E1842)}
+.pt-5{background:linear-gradient(135deg,#0A2E12,#133D1A)}
+/* Shopify-style top bar on thumb */
+.p-thumb-bar{
+  position:absolute;top:0;left:0;right:0;
+  height:28px;background:rgba(0,0,0,.4);
+  display:flex;align-items:center;padding:0 12px;gap:6px;z-index:2;
+}
+.p-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25)}
+.p-url{
+  margin-left:8px;flex:1;
+  background:rgba(255,255,255,.08);border-radius:4px;
+  height:14px;
+}
+.p-emoji{position:relative;z-index:2;font-size:2.2rem}
+.p-info{padding:18px 20px}
+.p-info h4{font-size:.95rem;font-weight:700;margin-bottom:4px}
+.p-info p{font-size:.81rem;color:var(--muted);line-height:1.55}
+.p-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.p-tag{
+  background:rgba(0,128,96,.10);color:var(--sg-light);
+  border:1px solid rgba(0,128,96,.20);
+  border-radius:5px;padding:3px 9px;
+  font-size:.7rem;font-weight:600;letter-spacing:.02em;
+}
+
+/* ══════════════════════════════════════
+   SKILLS
+══════════════════════════════════════ */
+.skills-layout{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:80px;align-items:start;
+}
+.skill-row{margin-bottom:20px}
+.skill-meta{display:flex;justify-content:space-between;margin-bottom:7px}
+.skill-name{font-size:.88rem;font-weight:600}
+.skill-pct{font-size:.82rem;color:var(--sg-light);font-weight:700}
+.skill-bar{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.skill-fill{
+  height:100%;width:0;border-radius:3px;
+  background:linear-gradient(90deg,var(--sg),#00C896);
+  transition:width 1.5s cubic-bezier(.22,1,.36,1);
+}
+
+/* ══════════════════════════════════════
+   PROCESS — SHOPIFY-STYLE STEPPER
+══════════════════════════════════════ */
+.process-sec{background:var(--bg3)}
+.process-track{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:0;margin-top:50px;position:relative;
+}
+/* connector line */
+.process-track::before{
+  content:'';
+  position:absolute;top:28px;left:12.5%;right:12.5%;
+  height:1px;background:var(--border);z-index:0;
+}
+.proc-step{
+  padding:0 16px 0;text-align:center;
+  opacity:0;transform:translateY(18px);
+  position:relative;z-index:1;
+}
+.proc-step.vis{animation:cardIn .5s ease forwards}
+.proc-num{
+  width:52px;height:52px;border-radius:50%;
+  background:var(--card);border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-head);font-size:1rem;font-weight:800;
+  color:var(--sg-light);margin:0 auto 18px;
+  transition:border-color .3s,background .3s;
+}
+.proc-step:hover .proc-num{border-color:var(--sg);background:rgba(0,128,96,.12)}
+.proc-step h4{font-size:.95rem;font-weight:700;margin-bottom:8px}
+.proc-step p{font-size:.82rem;color:var(--muted);line-height:1.6}
+
+/* ══════════════════════════════════════
+   TESTIMONIAL / TRUST BAR
+══════════════════════════════════════ */
+.trust-bar{
+  background:var(--card);
+  border-top:1px solid var(--border2);
+  border-bottom:1px solid var(--border2);
+  padding:28px 6%;
+  display:flex;align-items:center;justify-content:center;
+  gap:48px;flex-wrap:wrap;
+  position:relative;z-index:10;
+}
+.trust-item{
+  display:flex;align-items:center;gap:10px;
+  font-size:.83rem;font-weight:600;color:var(--muted);
+}
+.trust-item span{font-size:1.2rem}
+.trust-item strong{color:var(--white)}
+
+/* ══════════════════════════════════════
+   CTA
+══════════════════════════════════════ */
+.cta-sec{
+  text-align:center;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 60%, rgba(0,128,96,.12) 0%, transparent 65%),
+    var(--bg2);
+  padding:100px 6%;position:relative;z-index:10;
+  overflow:hidden;
+}
+.cta-sec::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--sg),transparent);
+  opacity:.4;
+}
+.cta-sec h2{
+  font-family:var(--font-head);
+  font-size:clamp(2.2rem,5vw,3.8rem);
+  font-weight:800;letter-spacing:-.03em;margin-bottom:14px;
+}
+.cta-sec h2 span{color:var(--sg-light)}
+.cta-sec p{color:var(--muted);font-size:1rem;max-width:480px;margin:0 auto 38px;line-height:1.75}
+.cta-chips{
+  display:flex;gap:14px;justify-content:center;
+  flex-wrap:wrap;margin-top:36px;
+}
+.chip{
+  background:var(--card);
+  border:1px solid var(--border2);
+  border-radius:100px;padding:10px 20px;
+  font-size:.82rem;font-weight:600;
+  display:flex;align-items:center;gap:8px;
+  color:var(--muted);
+}
+.chip span{font-size:1rem}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer{
+  text-align:center;padding:24px 6%;
+  border-top:1px solid var(--border2);
+  color:var(--muted);font-size:.78rem;
+  position:relative;z-index:10;
+}
+footer strong{color:var(--sg-light)}
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hero-stats{flex-direction:column}
+  .stat+.stat::before{display:none}
+  .skills-layout{grid-template-columns:1fr;gap:40px}
+  .process-track{grid-template-columns:1fr 1fr;gap:30px}
+  .process-track::before{display:none}
+  .offer-banner{flex-direction:column;text-align:center;padding:24px 20px}
+  .trust-bar{gap:24px}
+}
+@media(max-width:480px){
+  .process-track{grid-template-columns:1fr}
+  .hero-stats{width:100%}
+  .stat{padding:18px 24px}
+}
+</style>
+</head>
+<body>
+
+<!-- SHOPIFY-STYLE BACKGROUNDS -->
+<div class="bg-mesh"></div>
+<div class="bg-noise"></div>
+<div class="bg-top-glow"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">🛍</div>
+    Abdul Mobeen
+  </div>
+  <ul class="nav-links">
+    <li><a href="#why">Why Me</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#process">Process</a></li>
+  </ul>
+  <a href="https://www.upwork.com/freelancers/~01ac0ddd2a7eb2bed8" target="_blank" class="nav-cta">View on Upwork</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-watermark">🛍</div>
+
+  <div class="hero-pill">
+    <span class="pill-dot"></span>
+    Proposal for Clayton Bates
+  </div>
+
+  <h1>Shopify Developer<br/>Built for <span class="green">100+ Stores</span><br/>a Year</h1>
+
+  <p class="hero-sub">
+    6+ years of custom Liquid, app integrations, and pixel-perfect theme builds.
+    Senior-level output. Zero hand-holding. Ready to be your 3rd developer — starting with one free store.
+  </p>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num" id="c-exp">0+</div>
+      <div class="stat-label">Years Experience</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="c-stores">0+</div>
+      <div class="stat-label">Stores Built</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="c-rate">0%</div>
+      <div class="stat-label">Client Satisfaction</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">Top</div>
+      <div class="stat-label">Expert Vetted</div>
+    </div>
+  </div>
+
+  <div class="hero-btns">
+    <a href="#portfolio" class="btn-primary">See My Work →</a>
+    <a href="https://www.upwork.com/freelancers/~01ac0ddd2a7eb2bed8" target="_blank" class="btn-outline">View Upwork Profile</a>
+  </div>
+</section>
+
+<!-- FREE OFFER -->
+<div class="offer-wrap" style="position:relative;z-index:10;padding:40px 6% 80px;max-width:1100px;margin:0 auto;">
+  <div class="offer-banner">
+    <div class="offer-tag">🎁</div>
+    <div class="offer-text">
+      <h3>One Complete Shopify Store — Built Free</h3>
+      <p>
+        Before you commit, let me earn your trust with real work. I'll build one fully production-ready Shopify store for your team at absolutely no cost. Clean code, clean handoff, zero strings attached. Judge the quality first — then decide.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item"><span>✅</span><span>Expert Vetted on <strong>Upwork</strong></span></div>
+  <div class="trust-item"><span>🍛</span><span>Favorite food: <strong>Biryani</strong></span></div>
+  <div class="trust-item"><span>⚡</span><span>AI-assisted workflow for <strong>faster builds</strong></span></div>
+  <div class="trust-item"><span>🔒</span><span>Clean code, <strong>documented</strong> handoffs</span></div>
+  <div class="trust-item"><span>🌏</span><span>Async-first, <strong>zero babysitting</strong></span></div>
+</div>
+
+<!-- WHY ME -->
+<section id="why">
+  <div class="inner">
+    <div class="eyebrow">Why Choose Me</div>
+    <h2 class="sec-title">Wired for High-Volume<br/>Shopify Work</h2>
+    <p class="sec-desc">Clayton, your pipeline ships 100+ stores a year. Here's exactly how I fit in without slowing it down.</p>
+
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="wc-icon">⚡</div>
+        <h4>Zero Hand-Holding</h4>
+        <p>Drop a brief, get a store. I read specs once, ask smart questions upfront, then disappear and deliver. Your pipeline doesn't get a bottleneck.</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-icon">🤖</div>
+        <h4>AI-Accelerated Builds</h4>
+        <p>I use AI as a coding accelerator — not a crutch. Velocity goes up, edge cases get caught early, and your 100-store quota stays on schedule. I'll send a screen recording showing exactly how.</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-icon">💧</div>
+        <h4>Liquid-First Developer</h4>
+        <p>Shopify Liquid is my primary language — not a side skill. Custom sections, dynamic metafields, app blocks — written from scratch, not forum copy-paste.</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-icon">🎨</div>
+        <h4>Figma → Shopify Pipeline</h4>
+        <p>Pixel-perfect Figma-to-Shopify builds, custom theme sections, and CRO-conscious layouts. Design and dev bridged in one person.</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-icon">🔗</div>
+        <h4>Deep App Integration</h4>
+        <p>Klaviyo, ReCharge, Yotpo, Judge.me, Loox, Gorgias — I've integrated them all and can troubleshoot conflicts without burning a week on back-and-forth.</p>
+      </div>
+      <div class="why-card">
+        <div class="wc-icon">🚀</div>
+        <h4>Shopify Plus Ready</h4>
+        <p>Checkout extensibility, B2B flows, custom storefronts — when your volume demands Plus-level solutions, I'm already trained and ready.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio" class="portfolio-sec">
+  <div class="inner">
+    <div class="eyebrow">Live Portfolio</div>
+    <h2 class="sec-title">5 Real Stores.<br/>Click Any One.</h2>
+    <p class="sec-desc">Every store below is live and publicly accessible. Open them in a new tab — inspect the code if you want.</p>
+
+    <div class="portfolio-grid">
+
+      <a href="https://half-bakd.com" target="_blank" class="p-card">
+        <div class="p-thumb pt-1">
+          <div class="p-thumb-bar">
+            <div class="p-dot"></div><div class="p-dot"></div><div class="p-dot"></div>
+            <div class="p-url"></div>
+          </div>
+          <span class="p-emoji">🍃</span>
+        </div>
+        <div class="p-info">
+          <h4>Half Bak'd</h4>
+          <p>Custom Liquid + JavaScript for a complex cannabis product experience. Dynamic variant logic, age-gate, and custom collection filters — all built from scratch.</p>
+          <div class="p-tags">
+            <span class="p-tag">Custom Liquid</span>
+            <span class="p-tag">JavaScript</span>
+            <span class="p-tag">Variant Logic</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="https://senbirdtea.com" target="_blank" class="p-card">
+        <div class="p-thumb pt-2">
+          <div class="p-thumb-bar">
+            <div class="p-dot"></div><div class="p-dot"></div><div class="p-dot"></div>
+            <div class="p-url"></div>
+          </div>
+          <span class="p-emoji">🍵</span>
+        </div>
+        <div class="p-info">
+          <h4>Senbird Tea</h4>
+          <p>Full theme build with a focus on brand storytelling, Core Web Vitals optimization, and mobile-first UX for a premium tea brand.</p>
+          <div class="p-tags">
+            <span class="p-tag">Theme Build</span>
+            <span class="p-tag">Performance</span>
+            <span class="p-tag">Mobile-First</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="https://atelierrmr.ca" target="_blank" class="p-card">
+        <div class="p-thumb pt-3">
+          <div class="p-thumb-bar">
+            <div class="p-dot"></div><div class="p-dot"></div><div class="p-dot"></div>
+            <div class="p-url"></div>
+          </div>
+          <span class="p-emoji">✨</span>
+        </div>
+        <div class="p-info">
+          <h4>Atelier RMR</h4>
+          <p>Luxury fashion brand with editorial layout. Figma-to-Shopify implementation with custom product display sections and refined typography.</p>
+          <div class="p-tags">
+            <span class="p-tag">Figma → Shopify</span>
+            <span class="p-tag">Luxury</span>
+            <span class="p-tag">Custom Sections</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="https://prima.co" target="_blank" class="p-card">
+        <div class="p-thumb pt-4">
+          <div class="p-thumb-bar">
+            <div class="p-dot"></div><div class="p-dot"></div><div class="p-dot"></div>
+            <div class="p-url"></div>
+          </div>
+          <span class="p-emoji">💜</span>
+        </div>
+        <div class="p-info">
+          <h4>Prima</h4>
+          <p>CBD wellness brand with subscription integration, trust-building social proof layout, and conversion-optimized product detail pages.</p>
+          <div class="p-tags">
+            <span class="p-tag">Subscriptions</span>
+            <span class="p-tag">CRO</span>
+            <span class="p-tag">Wellness</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="https://eureka-farms.com" target="_blank" class="p-card">
+        <div class="p-thumb pt-5">
+          <div class="p-thumb-bar">
+            <div class="p-dot"></div><div class="p-dot"></div><div class="p-dot"></div>
+            <div class="p-url"></div>
+          </div>
+          <span class="p-emoji">🌿</span>
+        </div>
+        <div class="p-info">
+          <h4>Eureka Farms</h4>
+          <p>Farm-direct e-commerce with custom variant selectors, subscription box logic, and a clean agricultural brand identity built for trust.</p>
+          <div class="p-tags">
+            <span class="p-tag">Custom Variants</span>
+            <span class="p-tag">Subscriptions</span>
+            <span class="p-tag">Branding</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="inner">
+    <div class="skills-layout">
+      <div>
+        <div class="eyebrow">Technical Skills</div>
+        <h2 class="sec-title">The Stack Your<br/>Pipeline Needs</h2>
+        <p class="sec-desc">From raw Liquid to full Shopify Plus — every tool your 100-store operation demands, at senior-level depth.</p>
+        <div style="margin-top:28px">
+          <a href="https://www.upwork.com/freelancers/~01ac0ddd2a7eb2bed8" target="_blank" class="btn-primary" style="display:inline-flex">
+            View Full Profile →
+          </a>
+        </div>
+      </div>
+      <div class="skills-wrap" id="skills-wrap">
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">Shopify Liquid &amp; Theme Dev</span><span class="skill-pct">98%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-w="98"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">HTML / CSS / SCSS</span><span class="skill-pct">96%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-w="96"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">JavaScript / ES6+</span><span class="skill-pct">92%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-w="92"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">Figma → Shopify</span><span class="skill-pct">94%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-w="94"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">App Integration</span><span class="skill-pct">90%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-w="90"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">E-commerce Optimization</span><span class="skill-pct">93%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-w="93"></div></div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-meta"><span class="skill-name">Shopify Plus / B2B</span><span class="skill-pct">85%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-w="85"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process" class="process-sec">
+  <div class="inner">
+    <div class="eyebrow">How I Work</div>
+    <h2 class="sec-title">Plugs Into Your<br/>100-Store Pipeline</h2>
+    <p class="sec-desc">Async-first, documentation-heavy, and built to run independently inside your existing workflow.</p>
+
+    <div class="process-track">
+      <div class="proc-step">
+        <div class="proc-num">01</div>
+        <h4>Brief Intake</h4>
+        <p>Review your brief, ask the right questions once, confirm scope — before a single line is written.</p>
+      </div>
+      <div class="proc-step">
+        <div class="proc-num">02</div>
+        <h4>Rapid Build</h4>
+        <p>AI-assisted coding keeps velocity high. Custom Liquid, JS, and theme work done fast without cutting corners.</p>
+      </div>
+      <div class="proc-step">
+        <div class="proc-num">03</div>
+        <h4>Loom Walkthrough</h4>
+        <p>Screen recording of every section, interaction, and edge case sent before handoff — no surprises.</p>
+      </div>
+      <div class="proc-step">
+        <div class="proc-num">04</div>
+        <h4>Clean Handoff</h4>
+        <p>Documented code, clean commits, and a fully QA'd store ready for your team to launch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contact" class="cta-sec">
+  <div class="eyebrow" style="justify-content:center">Let's Work Together</div>
+  <h2 style="margin-top:10px">Ready to Be Your<br/><span>3rd Shopify Developer</span></h2>
+  <p>You're building 100+ stores a year. Let me carry some of that load — starting with one free store you can judge without any commitment.</p>
+
+  <a href="https://www.upwork.com/freelancers/~01ac0ddd2a7eb2bed8" target="_blank" class="btn-primary" style="font-size:1rem;padding:16px 38px;display:inline-flex">
+    Message Me on Upwork →
+  </a>
+
+  <div class="cta-chips">
+    <div class="chip"><span>🍛</span> Favorite Food: Biryani</div>
+    <div class="chip"><span>✅</span> Expert Vetted — Upwork</div>
+    <div class="chip"><span>📦</span> 6+ Years Shopify</div>
+    <div class="chip"><span>🤖</span> AI-Assisted Workflow</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Proposal by <strong>Abdul Mobeen</strong> · Senior Shopify Developer · For Clayton Bates · 2024</p>
+</footer>
+
+<script>
+/* ── CANVAS PARTICLES — floating Shopify-green orbs ── */
+const canvas = document.getElementById('bg-canvas');
+const ctx    = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize(){
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor(){this.reset(true)}
+  reset(init){
+    this.x    = Math.random() * W;
+    this.y    = init ? Math.random() * H : H + 20;
+    this.r    = Math.random() * 180 + 40;
+    this.vx   = (Math.random() - .5) * .18;
+    this.vy   = -(Math.random() * .22 + .08);
+    this.a    = Math.random() * .045 + .008;
+    this.da   = (Math.random() - .5) * .0001;
+    this.life = 0;
+    this.maxL = Math.random() * 600 + 400;
+  }
+  update(){
+    this.x  += this.vx;
+    this.y  += this.vy;
+    this.a  += this.da;
+    this.a   = Math.max(.004, Math.min(.055, this.a));
+    this.life++;
+    if(this.y < -this.r*2 || this.life > this.maxL) this.reset(false);
+  }
+  draw(){
+    const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r);
+    g.addColorStop(0,   `rgba(0,168,100,${this.a})`);
+    g.addColorStop(.5,  `rgba(0,128,96,${this.a*.5})`);
+    g.addColorStop(1,   `rgba(0,80,60,0)`);
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+    ctx.fillStyle = g;
+    ctx.fill();
+  }
+}
+
+for(let i=0;i<18;i++) particles.push(new Particle());
+
+function loop(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{p.update();p.draw()});
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* ── COUNTERS ── */
+function count(id, end, dur, suffix){
+  const el = document.getElementById(id);
+  if(!el) return;
+  let s=0, step=end/(dur/16);
+  const t = setInterval(()=>{
+    s+=step;
+    if(s>=end){s=end;clearInterval(t)}
+    el.textContent = Math.floor(s) + suffix;
+  },16);
+}
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    count('c-exp',    6,  1100, '+');
+    count('c-stores', 80, 1800, '+');
+    count('c-rate',   98, 1600, '%');
+  }, 500);
+});
+
+/* ── SCROLL REVEAL ── */
+const obs = new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('vis'), i*70);
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:.1});
+document.querySelectorAll('.why-card,.p-card,.proc-step').forEach(el=>obs.observe(el));
+
+/* ── SKILL BARS ── */
+const sObs = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.skill-fill').forEach(b=>{b.style.width=b.dataset.w+'%'});
+      sObs.unobserve(e.target);
+    }
+  });
+},{threshold:.3});
+const sw = document.getElementById('skills-wrap');
+if(sw) sObs.observe(sw);
+
+/* ── RESPONSIVE SKILLS ── */
+function rLayout(){
+  const l = document.querySelector('.skills-layout');
+  if(!l) return;
+  l.style.gridTemplateColumns = window.innerWidth<768 ? '1fr' : '1fr 1fr';
+  l.style.gap                 = window.innerWidth<768 ? '40px' : '80px';
+}
+rLayout();
+window.addEventListener('resize', rLayout);
+</script>
+</body>
+</html>
